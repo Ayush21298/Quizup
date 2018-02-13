@@ -1,0 +1,19 @@
+{
+  "name": "quizup",
+  "version": "1.0.0",
+  "description": "Tryst'18",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ayush21298/Quizup.git"
+  },
+  "author": "Ayush21298 (Ayush Patel)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ayush21298/Quizup/issues"
+  },
+  "homepage": "https://github.com/Ayush21298/Quizup#readme"
+}
