@@ -1,0 +1,12 @@
+body {
+	background-color: #000;
+}
+
+.intro { 
+	color:#fff; 
+	text-decoration: none;
+}
+
+.intro img {
+	width: 100%;
+}
