@@ -28,28 +28,39 @@ $(document).ready(function(){
     if(user_auth==false){
         $("#toggle_login").html("Login");
         $(".question").hide();
+        $(".login").show();
+        $(".logout").hide();
     }else{
         $("#toggle_login").html("Logout");
         $(".question").show();
+        $(".login").hide();
+        $(".logout").hide();
     }
 
     $("#toggle_admin").click(function(){
         $(".admin").show();
         $(".question").hide();
         $(".login").hide();
+        $(".logout").hide();
     })
 
     $("#toggle_question").click(function(){
         $(".admin").hide();
         $(".question").show();
         $(".login").hide();
+        $(".logout").hide();
     })
 
     $("#toggle_login").click(function(){
         $(".admin").hide();
         $(".question").hide();
-        $(".login").show();
-        
+            if(user_auth==false){
+                $(".login").show();
+                $(".logout").hide();
+            }else{
+                $(".login").hide();
+                $(".logout").show();
+            }
     })
 
     $("#next").click(function(){
