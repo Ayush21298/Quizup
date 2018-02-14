@@ -91,10 +91,16 @@ app.post('/answer',function(req,res){
 	username=req.body.username;
 	choice=req.body.choice;
 	correct=question[queno].correct;
+	// console.log(queno);
 	if(choice==correct){
-		console.log("Correct");
+		// console.log("Correct");
+		// console.log(scores);
+		scores[username]+=1;
+		console.log(JSON.stringify(scores));
+		// console.log(scores[username]);
 	}else{
-		console.log("Incorrect");
+		// console.log("Incorrect");
+		console.log(JSON.stringify(scores));
 	}
 });
 

@@ -9,6 +9,7 @@ socket.on('updateQuestion', function(data){
         url:"/question",
         dataType:"json"
     }).done(function(data){
+        $(".options").prop('disabled',false);
         $("#que").html(data.question.question);
         $("#op1").html(data.question.options[0]);
         $("#op2").html(data.question.options[1]);
@@ -25,6 +26,7 @@ $(document).ready(function(){
         url:"/question",
         dataType:"json"
     }).done(function(data){
+        $(".options").prop('disabled',false);
         $("#que").html(data.question.question);
         $("#op1").html(data.question.options[0]);
         $("#op2").html(data.question.options[1]);
@@ -89,7 +91,7 @@ $(document).ready(function(){
             // alert(JSON.stringify(data));
             if(data.user_auth==true){
                 user_auth=true;
-                username=username;
+                username=data.username;
                 $(".login").hide();
                 $(".question").show();
                 $("#toggle_login").html("Logout");
@@ -115,10 +117,64 @@ $(document).ready(function(){
                 dataType:"json",
                 data:{username:username,choice:1}
             });
-            $('#op1').prop('disabled', true);
-            $('#op2').prop('disabled', true);
-            $('#op3').prop('disabled', true);
-            $('#op4').prop('disabled', true);
+            $('.options').prop('disabled', true);
+        }
+        else{
+            alert("Login To Submit !!!!");
+            $(".admin").hide();
+            $(".question").hide();
+            $(".login").show();
+            $(".logout").hide();
+        }
+    });
+
+    $("#op2").click(function(){
+        if(user_auth==true){
+            $.ajax({
+                type:"POST",
+                url:"/answer",
+                dataType:"json",
+                data:{username:username,choice:2}
+            });
+            $('.options').prop('disabled', true);
+        }
+        else{
+            alert("Login To Submit !!!!");
+            $(".admin").hide();
+            $(".question").hide();
+            $(".login").show();
+            $(".logout").hide();
+        }
+    });
+
+    $("#op3").click(function(){
+        if(user_auth==true){
+            $.ajax({
+                type:"POST",
+                url:"/answer",
+                dataType:"json",
+                data:{username:username,choice:3}
+            });
+            $('.options').prop('disabled', true);
+        }
+        else{
+            alert("Login To Submit !!!!");
+            $(".admin").hide();
+            $(".question").hide();
+            $(".login").show();
+            $(".logout").hide();
+        }
+    });
+
+    $("#op4").click(function(){
+        if(user_auth==true){
+            $.ajax({
+                type:"POST",
+                url:"/answer",
+                dataType:"json",
+                data:{username:username,choice:4}
+            });
+            $('.options').prop('disabled', true);
         }
         else{
             alert("Login To Submit !!!!");
