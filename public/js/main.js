@@ -1,9 +1,20 @@
 var socket = io.connect("http://localhost:8000");
 
+socket.on('updateQuestion', function(data){
+    alert(JSON.stringify(data));
+});
+
 $(document).ready(function(){
     console.log("Working");
     
-    $(".intro").hide();
+    // $(".intro").hide();
+
+    $(".admin").hide();
+
+    $("#toggle_admin").click(function(){
+        $(".admin").toggle();
+        $(".question").toggle();
+    })
 
     $("#next").click(function(){
         var username = prompt("Authentication - Username", "admin");
@@ -17,6 +28,12 @@ $(document).ready(function(){
             // console.log(data.authentication);
             if(data.authentication){
                 $("#check_text").html("Hello, Admin");
+                console.log(JSON.stringify(data));
+                $("#que").html(data.question.question);
+                $("#op1").html(data.question.options[0]);
+                $("#op2").html(data.question.options[1]);
+                $("#op3").html(data.question.options[2]);
+                $("#op4").html(data.question.options[3]);
             }
             else{
                 $("#check_text").html("FuCk oFf !!!!");
