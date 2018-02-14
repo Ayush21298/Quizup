@@ -67,8 +67,17 @@ app.post('/auth',function(req,res){
 	}
 });
 
+app.post('/user_auth',function(req,res){
+	// console.log(JSON.stringify(req.body));
+	if(req.body.pass_text=="admin"){
+		res.json({user_auth:true,username:req.body.user_text});
+	} else {
+		res.json({user_auth:false,username:req.body.user_text});
+	}
+});
+
 io.on('connection',function(socket){
-	console.log("New Client");
+	// console.log("New Client");
 	socket.on('updateQuestion',function(data){
 		console.log("Update Question : Question "+data);
 		io.sockets.emit('updateQuestion',data);

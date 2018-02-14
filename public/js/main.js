@@ -74,6 +74,29 @@ $(document).ready(function(){
             }
     })
 
+    $("#log_btn").click(function(){
+        // alert("ayush");
+        user_text = $("#user_text").val();
+        pass_text = $("#pass_text").val();
+        $.ajax({
+            type:"POST",
+            url:"/user_auth",
+            dataType:"json",
+            data:{user_text:user_text,pass_text:pass_text}
+        }).done(function(data){
+            // alert(JSON.stringify(data));
+            if(data.user_auth==true){
+                user_auth=true;
+                username=username;
+                $(".login").hide();
+                $(".question").show();
+                $("#toggle_login").html("Logout");
+            } else {
+                alert("Wrong username or password")
+            }
+        });
+    });
+
     $("#next").click(function(){
         var username = prompt("Authentication - Username", "admin");
         var password = prompt("Authentication - Password", "admin");
