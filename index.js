@@ -6,6 +6,8 @@ var fs = require('fs');
 var PORT = 8000;
 var bodyParser = require('body-parser');
 var queno=-1;
+var users=[];
+var scores={};
 
 var question = [
 	{
@@ -70,9 +72,29 @@ app.post('/auth',function(req,res){
 app.post('/user_auth',function(req,res){
 	// console.log(JSON.stringify(req.body));
 	if(req.body.pass_text=="admin"){
+		// console.log(req.body.user_text);
+		// console.log(users);
+		// console.log(users.indexOf(req.body.user_text));
+		var user_text = req.body.user_text;
+		if(users.indexOf(user_text)==-1){
+			users.push(user_text);
+			scores[user_text]=0;
+			// console.log(JSON.stringify(scores));
+		}
 		res.json({user_auth:true,username:req.body.user_text});
 	} else {
 		res.json({user_auth:false,username:req.body.user_text});
+	}
+});
+
+app.post('/answer',function(req,res){
+	username=req.body.username;
+	choice=req.body.choice;
+	correct=question[queno].correct;
+	if(choice==correct){
+		console.log("Correct");
+	}else{
+		console.log("Incorrect");
 	}
 });
 

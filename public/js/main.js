@@ -78,6 +78,8 @@ $(document).ready(function(){
         // alert("ayush");
         user_text = $("#user_text").val();
         pass_text = $("#pass_text").val();
+        $("#user_text").val("");
+        $("#pass_text").val("");
         $.ajax({
             type:"POST",
             url:"/user_auth",
@@ -95,6 +97,36 @@ $(document).ready(function(){
                 alert("Wrong username or password")
             }
         });
+    });
+
+    $("#logout_btn").click(function(){
+        user_auth=false;
+        $(".login").show();
+        $(".logout").hide();
+        $(".question").hide();
+        $("#toggle_login").html("Login");
+    });
+
+    $("#op1").click(function(){
+        if(user_auth==true){
+            $.ajax({
+                type:"POST",
+                url:"/answer",
+                dataType:"json",
+                data:{username:username,choice:1}
+            });
+            $('#op1').prop('disabled', true);
+            $('#op2').prop('disabled', true);
+            $('#op3').prop('disabled', true);
+            $('#op4').prop('disabled', true);
+        }
+        else{
+            alert("Login To Submit !!!!");
+            $(".admin").hide();
+            $(".question").hide();
+            $(".login").show();
+            $(".logout").hide();
+        }
     });
 
     $("#next").click(function(){
