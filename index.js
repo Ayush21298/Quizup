@@ -46,18 +46,23 @@ console.log('Listening at : http://localhost:'+PORT);
 
 app.get('/',function (req,res) {
 	res.sendFile(__dirname + '/index.html');
-})
+});
+
+app.get('/question',function(req,res){
+	console.log('requested question');
+	res.json({question:question[queno]});
+});
 
 app.post('/auth',function(req,res){
 	// console.log("USERNAME: "+req.body.username + " PASSWORD: "+req.body.password);
 	if(req.body.username=="admin" && req.body.password=="admin"){
 		// console.log("True");
 		queno=queno+1;
-		socket.emit('updateQuestion',question[queno]);
+		// socket.emit('updateQuestion',question[queno]);
 		res.json({authentication:true,question:question[queno]});
 	}
 	else{
 		// console.log("False");
 		res.json({authentication:false});
 	}
-})
+});

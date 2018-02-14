@@ -1,4 +1,6 @@
 var socket = io.connect("http://localhost:8000");
+var username;
+var user_auth=false;
 
 socket.on('updateQuestion', function(data){
     alert(JSON.stringify(data));
@@ -6,14 +8,48 @@ socket.on('updateQuestion', function(data){
 
 $(document).ready(function(){
     console.log("Working");
+
+    $.ajax({
+        type:"GET",
+        url:"/question",
+        dataType:"json"
+    }).done(function(data){
+        $("#que").html(data.question.question);
+        $("#op1").html(data.question.options[0]);
+        $("#op2").html(data.question.options[1]);
+        $("#op3").html(data.question.options[2]);
+        $("#op4").html(data.question.options[3]);
+    });
     
     // $(".intro").hide();
 
     $(".admin").hide();
 
+    if(user_auth==false){
+        $("#toggle_login").html("Login");
+        $(".question").hide();
+    }else{
+        $("#toggle_login").html("Logout");
+        $(".question").show();
+    }
+
     $("#toggle_admin").click(function(){
-        $(".admin").toggle();
-        $(".question").toggle();
+        $(".admin").show();
+        $(".question").hide();
+        $(".login").hide();
+    })
+
+    $("#toggle_question").click(function(){
+        $(".admin").hide();
+        $(".question").show();
+        $(".login").hide();
+    })
+
+    $("#toggle_login").click(function(){
+        $(".admin").hide();
+        $(".question").hide();
+        $(".login").show();
+        
     })
 
     $("#next").click(function(){
