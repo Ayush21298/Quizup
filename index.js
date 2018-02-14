@@ -49,7 +49,7 @@ app.get('/',function (req,res) {
 });
 
 app.get('/question',function(req,res){
-	console.log('requested question');
+	// console.log('requested question');
 	res.json({question:question[queno]});
 });
 
@@ -65,4 +65,12 @@ app.post('/auth',function(req,res){
 		// console.log("False");
 		res.json({authentication:false});
 	}
+});
+
+io.on('connection',function(socket){
+	console.log("New Client");
+	socket.on('updateQuestion',function(data){
+		console.log("Update Question : Question "+data);
+		io.sockets.emit('updateQuestion',data);
+	});
 });

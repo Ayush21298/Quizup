@@ -3,7 +3,18 @@ var username;
 var user_auth=false;
 
 socket.on('updateQuestion', function(data){
-    alert(JSON.stringify(data));
+    // alert(JSON.stringify(data));
+    $.ajax({
+        type:"GET",
+        url:"/question",
+        dataType:"json"
+    }).done(function(data){
+        $("#que").html(data.question.question);
+        $("#op1").html(data.question.options[0]);
+        $("#op2").html(data.question.options[1]);
+        $("#op3").html(data.question.options[2]);
+        $("#op4").html(data.question.options[3]);
+    });
 });
 
 $(document).ready(function(){
@@ -81,6 +92,7 @@ $(document).ready(function(){
                 $("#op2").html(data.question.options[1]);
                 $("#op3").html(data.question.options[2]);
                 $("#op4").html(data.question.options[3]);
+                socket.emit('updateQuestion',data.question.id);
             }
             else{
                 $("#check_text").html("FuCk oFf !!!!");
