@@ -8,7 +8,7 @@ var bodyParser = require('body-parser');
 var queno=-1;
 var users=[];
 var scores={};
-var question;
+var question=[];
 
 const csvFilePath='public/csv/a.csv';
 const csv=require('csvtojson');
@@ -16,9 +16,10 @@ csv()
 .fromFile(csvFilePath)
 .on('json',(jsonObj)=>{
     // console.log(JSON.stringify(jsonObj));
-    question=jsonObj;
+    question.push(jsonObj);
 })
 .on('done',(error)=>{
+	console.log(question);
     console.log('end')
 })
 
