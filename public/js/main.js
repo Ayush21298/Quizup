@@ -11,10 +11,10 @@ socket.on('updateQuestion', function(data){
     }).done(function(data){
         $(".options").prop('disabled',false);
         $("#que").html(data.question.question);
-        $("#op1").html(data.question.options[0]);
-        $("#op2").html(data.question.options[1]);
-        $("#op3").html(data.question.options[2]);
-        $("#op4").html(data.question.options[3]);
+        $("#op1").html(data.question.option1);
+        $("#op2").html(data.question.option2);
+        $("#op3").html(data.question.option2);
+        $("#op4").html(data.question.option4);
     });
 });
 
@@ -28,10 +28,10 @@ $(document).ready(function(){
     }).done(function(data){
         $(".options").prop('disabled',false);
         $("#que").html(data.question.question);
-        $("#op1").html(data.question.options[0]);
-        $("#op2").html(data.question.options[1]);
-        $("#op3").html(data.question.options[2]);
-        $("#op4").html(data.question.options[3]);
+        $("#op1").html(data.question.option1);
+        $("#op2").html(data.question.option2);
+        $("#op3").html(data.question.option3);
+        $("#op4").html(data.question.option4);
     });
     
     // $(".intro").hide();
@@ -199,10 +199,10 @@ $(document).ready(function(){
                 $("#check_text").html("Hello, Admin");
                 console.log(JSON.stringify(data));
                 $("#que").html(data.question.question);
-                $("#op1").html(data.question.options[0]);
-                $("#op2").html(data.question.options[1]);
-                $("#op3").html(data.question.options[2]);
-                $("#op4").html(data.question.options[3]);
+                $("#op1").html(data.question.option1);
+                $("#op2").html(data.question.option2);
+                $("#op3").html(data.question.option3);
+                $("#op4").html(data.question.option4);
                 socket.emit('updateQuestion',data.question.id);
             }
             else{
