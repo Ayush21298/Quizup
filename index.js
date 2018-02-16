@@ -75,6 +75,8 @@ app.post('/auth',function(req,res){
 	if(req.body.username=="admin" && req.body.password=="admin"){
 		// console.log("True");
 		queno=queno+1;
+		time=req.body.time;
+		console.log(time);
 		// socket.emit('updateQuestion',question[queno]);
 		res.json({authentication:true,question:question[queno]});
 	}

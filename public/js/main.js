@@ -188,11 +188,12 @@ $(document).ready(function(){
     $("#next").click(function(){
         var username = prompt("Authentication - Username", "admin");
         var password = prompt("Authentication - Password", "admin");
+        time = 30;
         $.ajax({
             type:"POST",
             url:"/auth",
             dataType:"json",
-            data:{username:username,password:password}
+            data:{username:username,password:password,time:time}
         }).done(function(data){
             // console.log(data.authentication);
             if(data.authentication){
