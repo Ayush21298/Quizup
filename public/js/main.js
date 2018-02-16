@@ -188,7 +188,8 @@ $(document).ready(function(){
     $("#next").click(function(){
         var username = prompt("Authentication - Username", "admin");
         var password = prompt("Authentication - Password", "admin");
-        time = 30;
+        time_text = $("#time_text").val();
+        time = time_text;
         $.ajax({
             type:"POST",
             url:"/auth",

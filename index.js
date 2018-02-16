@@ -77,12 +77,12 @@ app.post('/auth',function(req,res){
 		queno=queno+1;
 		// console.log(time);
 		tt = new Date();
-		// console.log(tt);
+		console.log(tt);
 		tt.setSeconds(tt.getSeconds()+parseInt(req.body.time));
 		// console.log(time);
 		// console.log(time<tt);
 		time=tt;
-		// console.log(time);
+		console.log(time);
 		// console.log(time<tt);
 		// socket.emit('updateQuestion',question[queno]);
 		res.json({authentication:true,question:question[queno]});
