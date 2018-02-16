@@ -9,6 +9,7 @@ var queno=-1;
 var users=[];
 var scores={};
 var question=[];
+var time=0;
 
 const csvFilePath='public/csv/a.csv';
 const csv=require('csvtojson');
@@ -19,7 +20,7 @@ csv()
     question.push(jsonObj);
 })
 .on('done',(error)=>{
-	console.log(question);
+	// console.log(question);
     console.log('end')
 })
 
@@ -92,7 +93,7 @@ app.post('/user_auth',function(req,res){
 		var user_text = req.body.user_text;
 		if(users.indexOf(user_text)==-1){
 			users.push(user_text);
-			scores[user_text]=0;
+			scores[user_text]={};
 			// console.log(JSON.stringify(scores));
 		}
 		res.json({user_auth:true,username:req.body.user_text});
@@ -102,19 +103,26 @@ app.post('/user_auth',function(req,res){
 });
 
 app.post('/answer',function(req,res){
-	username=req.body.username;
-	choice=req.body.choice;
-	correct=question[queno].correct;
-	// console.log(queno);
-	if(choice==correct){
-		// console.log("Correct");
-		// console.log(scores);
-		scores[username]+=1;
-		console.log(JSON.stringify(scores));
-		// console.log(scores[username]);
-	}else{
-		// console.log("Incorrect");
-		console.log(JSON.stringify(scores));
+	if(time>0){
+		username=req.body.username;
+		choice=req.body.choice;
+		correct=question[queno].correct;
+		// console.log(queno);
+		// if(scores[username].has(queno)){
+		// 	console.log("Repeat");
+		// } else {
+			if(choice==correct){
+				// console.log("Correct");
+				// console.log(scores);
+				scores[username][queno]=1;
+				console.log(JSON.stringify(scores));
+				// console.log(scores[username]);
+			}else{
+				// console.log("Incorrect");
+				scores[username][queno]=0;
+				console.log(JSON.stringify(scores));
+			}
+		// }
 	}
 });
 
