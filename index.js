@@ -70,22 +70,33 @@ app.get('/question',function(req,res){
 	res.json({question:question[queno]});
 });
 
+app.get('/result',function(req,res){
+	// console.log('requested question');
+	res.json({scores:scores});
+});
+
 app.post('/auth',function(req,res){
+	// console.log(question.length);
 	// console.log("USERNAME: "+req.body.username + " PASSWORD: "+req.body.password);
 	if(req.body.username=="admin" && req.body.password=="admin"){
 		// console.log("True");
 		queno=queno+1;
 		// console.log(time);
 		tt = new Date();
-		console.log(tt);
+		// console.log(tt);
 		tt.setSeconds(tt.getSeconds()+parseInt(req.body.time));
 		// console.log(time);
 		// console.log(time<tt);
 		time=tt;
-		console.log(time);
+		// console.log(time);
 		// console.log(time<tt);
 		// socket.emit('updateQuestion',question[queno]);
-		res.json({authentication:true,question:question[queno]});
+		if(queno<question.length){
+			res.json({authentication:true,question:question[queno]});
+		}
+		else{
+			res.json({authentication:true,question:{}});
+		}
 	}
 	else{
 		// console.log("False");
@@ -140,5 +151,9 @@ io.on('connection',function(socket){
 	socket.on('updateQuestion',function(data){
 		console.log("Update Question : Question "+data);
 		io.sockets.emit('updateQuestion',data);
+	});
+	socket.on('updateResult',function(){
+		console.log("Update Result");
+		io.sockets.emit('updateResult');
 	});
 });

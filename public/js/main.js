@@ -18,6 +18,24 @@ socket.on('updateQuestion', function(data){
     });
 });
 
+socket.on('updateResult', function(){
+    // alert(JSON.stringify(data));
+    // alert("yo");
+    $.ajax({
+        type:"GET",
+        url:"/result",
+        dataType:"json"
+    }).done(function(data){
+        $(".options").prop('disabled',false);
+        $("#que").html(JSON.stringify(data.scores));
+        $("#op1").html("");
+        $("#op2").html("");
+        $("#op3").html("");
+        $("#op4").html("");
+        alert(JSON.stringify(data.scores));
+    });
+});
+
 $(document).ready(function(){
     console.log("Working");
 
@@ -199,13 +217,17 @@ $(document).ready(function(){
             // console.log(data.authentication);
             if(data.authentication){
                 $("#check_text").html("Hello, Admin");
-                console.log(JSON.stringify(data));
-                $("#que").html(data.question.question);
-                $("#op1").html(data.question.option1);
-                $("#op2").html(data.question.option2);
-                $("#op3").html(data.question.option3);
-                $("#op4").html(data.question.option4);
-                socket.emit('updateQuestion',data.question.id);
+                // console.log(JSON.stringify(data));
+                if(data.question.id!=null){
+                    $("#que").html(data.question.question);
+                    $("#op1").html(data.question.option1);
+                    $("#op2").html(data.question.option2);
+                    $("#op3").html(data.question.option3);
+                    $("#op4").html(data.question.option4);
+                    socket.emit('updateQuestion',data.question.id);
+                } else {
+                    socket.emit('updateResult');
+                }
             }
             else{
                 $("#check_text").html("FuCk oFf !!!!");
