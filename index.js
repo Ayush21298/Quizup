@@ -9,7 +9,7 @@ var queno=-1;
 var users=[];
 var scores={};
 var question=[];
-var time=0;
+var time=new Date();
 
 const csvFilePath='public/csv/a.csv';
 const csv=require('csvtojson');
@@ -21,8 +21,8 @@ csv()
 })
 .on('done',(error)=>{
 	// console.log(question);
-    console.log('end')
-})
+    // console.log('end');
+});
 
 var question1 = [
 	{
@@ -75,8 +75,15 @@ app.post('/auth',function(req,res){
 	if(req.body.username=="admin" && req.body.password=="admin"){
 		// console.log("True");
 		queno=queno+1;
-		time=req.body.time;
-		console.log(time);
+		// console.log(time);
+		tt = new Date();
+		// console.log(tt);
+		tt.setSeconds(tt.getSeconds()+parseInt(req.body.time));
+		// console.log(time);
+		// console.log(time<tt);
+		time=tt;
+		// console.log(time);
+		// console.log(time<tt);
 		// socket.emit('updateQuestion',question[queno]);
 		res.json({authentication:true,question:question[queno]});
 	}
@@ -105,7 +112,7 @@ app.post('/user_auth',function(req,res){
 });
 
 app.post('/answer',function(req,res){
-	if(time>0){
+	if((new Date)<time){
 		username=req.body.username;
 		choice=req.body.choice;
 		correct=question[queno].correct;

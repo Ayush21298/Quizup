@@ -13,7 +13,7 @@ socket.on('updateQuestion', function(data){
         $("#que").html(data.question.question);
         $("#op1").html(data.question.option1);
         $("#op2").html(data.question.option2);
-        $("#op3").html(data.question.option2);
+        $("#op3").html(data.question.option3);
         $("#op4").html(data.question.option4);
     });
 });
