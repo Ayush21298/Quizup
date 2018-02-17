@@ -2,9 +2,10 @@
 <html>
 <head>
 	<title>Tryst'18 QuizUp</title>
-	<link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
+	<!-- <link rel="stylesheet" href="/stylesheets/bootstrap.min.css"> -->
 	<!-- <script src="/js/jquery-3.2.1.slim.min.js"></script> -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 	<script src="/js/popper.min.js"></script>
 	<script src="/js/bootstrap.min.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
@@ -13,44 +14,76 @@
 </head>
 <body>
 
-<button id="toggle_admin" class="btn">Admin</button>
-<button id="toggle_question" class="btn">Questions</button>
-<button id="toggle_login" class="btn"></button><br>
+<nav class="navbar navbar-expand-sm navbar-inverse bg-dark">
+	<a class="navbar-brand"><img src="https://tryst-iitd.com/images/tryst_logo_filled.png" class="fixed-height"></a>
+  <!-- Links -->
+  <ul class="navbar-nav pull-right">
+    <li class="nav-item">
+      <a class="nav-link" id="toggle_admin" href="#">Admin</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="toggle_question" href="#">Questions</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="toggle_login" href="#">Login</a>
+    </li>
+  </ul>
 
-<div class="intro">
-	<img class="img-responsive" src="https://tryst-iitd.com/images/tryst_logo_filled.png">
-	TRYST'18
-<!-- 	<h1>
-  		<a href="" class="typewrite" data-period="2000" data-type='[ "Hi, Welcome To Tryst 18", "Let us get Creative.", "Let us Love Design.", "Let us Love to Develop." ]'>
-    	<span class="wrap"></span>
-  		</a>
-	</h1> -->
+</nav>
+
+<!-- <nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+    </div>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="#">Home</a></li>
+      <li><a id="toggle_admin">Admin</a></li>
+      <li><a id="toggle_question">Questions</a></li>
+      <li><a id="toggle_login">Login</a></li>
+    </ul>
+  </div>
+</nav> -->
+
+<div class="title centered">
+	<h1 class="text-center">QuizUp</h1>
 </div>
 
-<div class="admin">
-	<center>
-	Time : <input type="text" name="time_text" id="time_text" value="30"><br>
-	<button id="next" class="btn-primary">Next Question</button><br>
-	<h1 id="check_text"></h1>
-	</center>
+<div class="login card">
+	<div class="card-block">
+		<div class="form-group">
+			<label>Username</label>
+			<input class="form-control" type="text" name="user_text" id="user_text">
+		</div>
+		<div class="form-group">
+			<label>Password</label>
+			<input class="form-control" type="Password" name="pass_text" id="pass_text">
+		</div>
+		<button id="log_btn" class="btn btn-primary">Submit</button>
+	</div>
 </div>
 
-<div class="question">
-	<center>
+
+<div class="admin card">
+	<div class="card-block">
+		<center>
+			<div class="form-group">
+				<label>Time</label>
+				<input class="form-control" type="text" name="time_text" id="time_text" value="30">
+			</div>
+		<button id="next" class="btn btn-primary">Next Question</button><br>
+		<h1 id="check_text"></h1>
+		</center>
+	</div>
+</div>
+
+<div class="question card">
+	<div class="card-block">
 		<h1 id="que"></h1>
 		<button id="op1" class="options"></button>
 		<button id="op2" class="options"></button>
 		<button id="op3" class="options"></button>
 		<button id="op4" class="options"></button>
-	</center>
-</div>
-
-<div class="login">
-	<center>
-		Username : <input type="text" name="user_text" id="user_text"><br>
-		Password : <input type="Password" name="pass_text" id="pass_text"><br>
-		<button id="log_btn">Submit</button>
-	</center>
+	</div>
 </div>
 
 <div class="logout">
