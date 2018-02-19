@@ -10,6 +10,7 @@ var users=[];
 var scores={};
 var question=[];
 var time=new Date();
+var loggedIn=false;
 
 const csvFilePath='public/csv/a.csv';
 const csv=require('csvtojson');
@@ -78,7 +79,8 @@ app.get('/result',function(req,res){
 app.post('/auth',function(req,res){
 	// console.log(question.length);
 	// console.log("USERNAME: "+req.body.username + " PASSWORD: "+req.body.password);
-	if(req.body.username=="admin" && req.body.password=="admin"){
+	if(loggedIn || (req.body.username=="admin" && req.body.password=="admin")){
+		loggedIn = true;
 		// console.log("True");
 		queno=queno+1;
 		// console.log(time);

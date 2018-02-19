@@ -1,6 +1,8 @@
 var socket = io.connect("http://localhost:8002");
 var username;
 var user_auth=false;
+var logged_in=false;
+var auth_post=false;
 
 socket.on('updateQuestion', function(data){
     // alert(JSON.stringify(data));
@@ -204,35 +206,42 @@ $(document).ready(function(){
     });
 
     $("#next").click(function(){
-        var username = prompt("Authentication - Username", "admin");
-        var password = prompt("Authentication - Password", "admin");
-        time_text = $("#time_text").val();
-        time = time_text;
-        $.ajax({
-            type:"POST",
-            url:"/auth",
-            dataType:"json",
-            data:{username:username,password:password,time:time}
-        }).done(function(data){
-            // console.log(data.authentication);
-            if(data.authentication){
-                $("#check_text").html("Hello, Admin");
-                // console.log(JSON.stringify(data));
-                if(data.question.id!=null){
-                    $("#que").html(data.question.question);
-                    $("#op1").html(data.question.option1);
-                    $("#op2").html(data.question.option2);
-                    $("#op3").html(data.question.option3);
-                    $("#op4").html(data.question.option4);
-                    socket.emit('updateQuestion',data.question.id);
-                } else {
-                    socket.emit('updateResult');
+        if(!logged_in){
+            logged_in = true;
+            var username = prompt("Authentication - Username", "admin");
+            var password = prompt("Authentication - Password", "admin");
+            time_text = $("#time_text").val();
+            time = time_text;
+            auth_post = true;    
+        }
+        if(auth_post){
+            $.ajax({
+                type:"POST",
+                url:"/auth",
+                dataType:"json",
+                data:{username:username,password:password,time:time}
+            }).done(function(data){
+                // console.log(data.authentication);
+                if(data.authentication){
+                    $("#check_text").html("Hello, Admin");
+                    // console.log(JSON.stringify(data));
+                    if(data.question.id!=null){
+                        $("#que").html(data.question.question);
+                        $("#op1").html(data.question.option1);
+                        $("#op2").html(data.question.option2);
+                        $("#op3").html(data.question.option3);
+                        $("#op4").html(data.question.option4);
+                        $("#question_text").html("Question updated to no. "+data.question.id);
+                        socket.emit('updateQuestion',data.question.id);
+                    } else {
+                        socket.emit('updateResult');
+                    }
                 }
-            }
-            else{
-                $("#check_text").html("FuCk oFf !!!!");
-            }
-        });
+                else{
+                    $("#check_text").html("Invalid Credentials!!!!");
+                }
+            });
+        }
     });
 
 });
