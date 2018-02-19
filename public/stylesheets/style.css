@@ -22,7 +22,7 @@ nav {
 
 .login, .question, .admin {
 	width: 25%;
-	min-width: 200px;
+	min-width: 300px;
 	margin: auto;
 }
 
@@ -37,3 +37,34 @@ nav {
 body {
 	background-color: #eee;
 }
+
+.leaderboard {
+	position: absolute;
+	right: 0px;
+	width: 15vw;
+	height: 96vh;
+	top: 50px;
+	min-width: 150px;
+}
+
+#leader, #leader tr {
+	width: 100%;
+}
+
+#leader tr td {
+	/*width: 50%;*/
+	padding: 5px;
+	color: white;
+}
+
+.td1 {
+	width: 60%;
+	background-color: #f28f3b;
+}
+
+.td2 {
+	width: 40%;
+	background-color: #0b3142;
+	text-align: center;
+}
+

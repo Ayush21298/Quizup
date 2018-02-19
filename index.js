@@ -76,6 +76,10 @@ app.get('/result',function(req,res){
 	res.json({scores:scores});
 });
 
+app.post('/result',function(req,res){
+	res.json({scores:scores});
+});
+
 app.post('/auth',function(req,res){
 	// console.log(question.length);
 	// console.log("USERNAME: "+req.body.username + " PASSWORD: "+req.body.password);

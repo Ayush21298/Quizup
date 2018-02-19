@@ -241,20 +241,36 @@ $(document).ready(function(){
                     $("#check_text").html("Invalid Credentials!!!!");
                 }
             });
+            $.ajax({
+                type:"POST",
+                url:"/result",
+                dataType:"json"
+            }).done(function (data){
+                // console.log(JSON.stringify(data));
+                $("#leader").empty();
+                for (var i in data.scores) {
+                    var player = data.scores[i];
+                    var player_score = 0;
+                    for(var ques in player) {
+                        player_score += player[ques];
+                    }
+                    console.log(i+" "+player_score);
+                    var tr = document.createElement("tr");
+                    var td1 = document.createElement("td");
+                    var td2 = document.createElement("td");
+                    td1.append(document.createTextNode(i));
+                    td2.append(document.createTextNode(player_score));
+                    td1.setAttribute("class","td1");
+                    td2.setAttribute("class","td2");
+                    tr.append(td1);
+                    tr.append(td2);
+                    $("#leader").append(tr);
+                }
+            });
         }
     });
 
 });
-
-
-
-
-
-
-
-
-
-
 
 var TxtType = function(el, toRotate, period) {
         this.toRotate = toRotate;
