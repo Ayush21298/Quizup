@@ -281,7 +281,7 @@ $(document).ready(function(){
                 }
                 console.log(leaderboard);
                 leaderboard.sort(function(a,b){
-                    return a[1]-b[1];
+                    return b[1]-a[1];
                 });
                 console.log(leaderboard);
                 for(var i =0 ; i< leaderboard.length;i++)
