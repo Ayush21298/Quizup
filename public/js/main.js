@@ -49,7 +49,7 @@ $(document).ready(function(){
         dataType:"json"
     }).done(function(data){
         $(".options").prop('disabled',false);
-        $("#que").html(data.question.question);
+        $("#que").html("Question No. "+data.question.id);
         $("#op1").html(data.question.option1);
         $("#op2").html(data.question.option2);
         $("#op3").html(data.question.option3);
@@ -235,14 +235,16 @@ $(document).ready(function(){
                     $("#check_text").html("Hello, Admin.");
                     // console.log(JSON.stringify(data));
                     if(data.question.id!=null){
-                        $("#que").html(data.question.question);
+                        $("#que").html(data.question.id);
                         $("#op1").html(data.question.option1);
                         $("#op2").html(data.question.option2);
                         $("#op3").html(data.question.option3);
                         $("#op4").html(data.question.option4);
-                        $("#question_text").html("Question updated to no. "+data.question.id);
+                        $("#question_text").html("Question "+data.question.id+": "+data.question.question);
                         $(".countdown").show();
-                        var distance = (data.time + 1) * 100;
+                        var countdown_time = data.time
+                        console.log(countdown_time);
+                        var distance = (countdown_time*1 + 1) * 1000;
                         var x = setInterval(function() {
                             distance = distance - 1000;
                             console.log(distance);
