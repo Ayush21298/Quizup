@@ -3,6 +3,8 @@ var username;
 var user_auth=false;
 var logged_in=false;
 var auth_post=false;
+var admin,password;
+var users={};
 
 socket.on('updateQuestion', function(data){
     // alert(JSON.stringify(data));
@@ -63,6 +65,8 @@ $(document).ready(function(){
         $(".question").hide();
         $(".login").show();
         $(".logout").hide();
+        $(".leaderboard").hide();
+        $(".countdown").hide();
     }else{
         $("#toggle_login").html("Logout");
         $(".question").show();
@@ -207,23 +211,28 @@ $(document).ready(function(){
 
     $("#next").click(function(){
         if(!logged_in){
+            $(".leaderboard").show();
             logged_in = true;
-            var username = prompt("Authentication - Username", "admin");
-            var password = prompt("Authentication - Password", "admin");
+            admin = prompt("Authentication - Username", "");
+            password = prompt("Authentication - Password", "");
             time_text = $("#time_text").val();
             time = time_text;
-            auth_post = true;    
+            auth_post = true; 
+            console.log(admin);
+            console.log(password);   
         }
         if(auth_post){
+            console.log(admin);
+            console.log(password);
             $.ajax({
                 type:"POST",
                 url:"/auth",
                 dataType:"json",
-                data:{username:username,password:password,time:time}
+                data:{username:admin,password:password,time:time}
             }).done(function(data){
                 // console.log(data.authentication);
                 if(data.authentication){
-                    $("#check_text").html("Hello, Admin");
+                    $("#check_text").html("Hello, Admin.");
                     // console.log(JSON.stringify(data));
                     if(data.question.id!=null){
                         $("#que").html(data.question.question);
@@ -232,6 +241,19 @@ $(document).ready(function(){
                         $("#op3").html(data.question.option3);
                         $("#op4").html(data.question.option4);
                         $("#question_text").html("Question updated to no. "+data.question.id);
+                        $(".countdown").show();
+                        var distance = (data.time + 1) * 100;
+                        var x = setInterval(function() {
+                            distance = distance - 1000;
+                            console.log(distance);
+                            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                            
+                            document.getElementById("timer").innerHTML = seconds + "s "; 
+                            if (distance < 0) {
+                                clearInterval(x);
+                                document.getElementById("timer").innerHTML = "Time Up!!!";
+                            }
+                        }, 1000);
                         socket.emit('updateQuestion',data.question.id);
                     } else {
                         socket.emit('updateResult');
@@ -247,6 +269,7 @@ $(document).ready(function(){
                 dataType:"json"
             }).done(function (data){
                 // console.log(JSON.stringify(data));
+                var leaderboard = [];
                 $("#leader").empty();
                 for (var i in data.scores) {
                     var player = data.scores[i];
@@ -254,12 +277,21 @@ $(document).ready(function(){
                     for(var ques in player) {
                         player_score += player[ques];
                     }
-                    console.log(i+" "+player_score);
+                    leaderboard.push([i,player_score]);
+                }
+                console.log(leaderboard);
+                leaderboard.sort(function(a,b){
+                    return a[1]-b[1];
+                });
+                console.log(leaderboard);
+                for(var i =0 ; i< leaderboard.length;i++)
+                {
+                    console.log(leaderboard[i][0]+" "+leaderboard[i][1]);
                     var tr = document.createElement("tr");
                     var td1 = document.createElement("td");
                     var td2 = document.createElement("td");
-                    td1.append(document.createTextNode(i));
-                    td2.append(document.createTextNode(player_score));
+                    td1.append(document.createTextNode(leaderboard[i][0]));
+                    td2.append(document.createTextNode(leaderboard[i][1]));
                     td1.setAttribute("class","td1");
                     td2.setAttribute("class","td2");
                     tr.append(td1);

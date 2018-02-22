@@ -26,6 +26,18 @@ nav {
 	margin: auto;
 }
 
+.countdown {
+	width: 10%;
+	min-width: 150px;
+	margin: auto;
+	background-color: #999;
+	padding: 5px !important;
+	color: white;
+	text-align: center;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
 .centered {
 	margin-top: 15vh;
 }
@@ -68,3 +80,11 @@ body {
 	text-align: center;
 }
 
+#que {
+	font-size: 24px;
+}
+
+.options {
+	margin-top: 5px;
+	margin-bottom: 5px;
+}

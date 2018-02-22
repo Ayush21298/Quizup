@@ -25,33 +25,6 @@ csv()
     // console.log('end');
 });
 
-var question1 = [
-	{
-		id:1,
-		question:"Question 1",
-		options:["Option 1","Option 2","Option 3","Option 4"],
-		correct:1
-	},
-	{
-		id:2,
-		question:"Question 2",
-		options:["Option 1","Option 2","Option 3","Option 4"],
-		correct:2
-	},
-	{
-		id:3,
-		question:"Question 3",
-		options:["Option 1","Option 2","Option 3","Option 4"],
-		correct:3
-	},
-	{
-		id:4,
-		question:"Question 4",
-		options:["Option 1","Option 2","Option 3","Option 4"],
-		correct:4
-	}
-];
-
 app.use(bodyParser.urlencoded({
     extended: true
 }));
@@ -83,8 +56,8 @@ app.post('/result',function(req,res){
 app.post('/auth',function(req,res){
 	// console.log(question.length);
 	// console.log("USERNAME: "+req.body.username + " PASSWORD: "+req.body.password);
-	if(loggedIn || (req.body.username=="admin" && req.body.password=="admin")){
-		loggedIn = true;
+	if(req.body.username=="admin" && req.body.password=="admin"){
+		// loggedIn = true;
 		// console.log("True");
 		queno=queno+1;
 		// console.log(time);
@@ -98,7 +71,7 @@ app.post('/auth',function(req,res){
 		// console.log(time<tt);
 		// socket.emit('updateQuestion',question[queno]);
 		if(queno<question.length){
-			res.json({authentication:true,question:question[queno]});
+			res.json({authentication:true,question:question[queno],time:req.body.time});
 		}
 		else{
 			res.json({authentication:true,question:{}});
@@ -121,8 +94,10 @@ app.post('/user_auth',function(req,res){
 			users.push(user_text);
 			scores[user_text]={};
 			// console.log(JSON.stringify(scores));
+			res.json({user_auth:true,username:req.body.user_text});
+		}else{
+			res.json({user_auth:false,username:req.body.user_text});
 		}
-		res.json({user_auth:true,username:req.body.user_text});
 	} else {
 		res.json({user_auth:false,username:req.body.user_text});
 	}
