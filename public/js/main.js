@@ -1,11 +1,15 @@
 var socket = io.connect();
-var username;
-var user_auth=false;
-var logged_in=false;
-var auth_post=false;
-var admin,password;
-var users={};
 var sessionid;
+
+var username;
+var user_logged_in=false;
+
+var auth_post=false;
+
+var admin_logged_in=false;
+var admin_username,admin_password;
+
+var users={};
 
 socket.on('connect', function(){
     sessionid = socket.id;
@@ -59,12 +63,12 @@ $(document).ready(function(){
     
     $(".admin").hide();
 
-    if(user_auth==false){
+    if(user_logged_in==false){
         $("#toggle_login").html("Login");
         $(".question").hide();
         $(".login").show();
         $(".logout").hide();
-        $(".leaderboard").hide();
+        $(".").hide();
         $(".countdown").hide();
     }else{
         $("#toggle_login").html("Logout");
@@ -80,17 +84,17 @@ $(document).ready(function(){
         $(".logout").hide();
     })
 
-    $("#toggle_question").click(function(){
-        $(".admin").hide();
-        $(".question").show();
-        $(".login").hide();
-        $(".logout").hide();
-    })
+    // $("#toggle_question").click(function(){
+    //     $(".admin").hide();
+    //     $(".question").show();
+    //     $(".login").hide();
+    //     $(".logout").hide();
+    // })
 
     $("#toggle_login").click(function(){
         $(".admin").hide();
         $(".question").hide();
-            if(user_auth==false){
+            if(user_logged_in==false){
                 $(".login").show();
                 $(".logout").hide();
             }else{
@@ -101,29 +105,27 @@ $(document).ready(function(){
 
     $("#log_btn").click(function(){
         user_text = $("#user_text").val();
-        pass_text = $("#pass_text").val();
+        passcode = $("#pass_text").val();
         $("#user_text").val("");
         $("#pass_text").val("");
         $.ajax({
             type:"POST",
-            url:"/user_auth",
+            url:"/login",
             dataType:"json",
-            data:{user_text:user_text,pass_text:pass_text,id:sessionid}
+            data:{username:user_text,passcode:passcode,id:sessionid}
         }).done(function(data){
-            if(data.user_auth==true){
-                user_auth=true;
-                username=data.username;
-                $(".login").hide();
-                $(".question").show();
-                $("#toggle_login").html("Logout");
-            } else {
-                alert("Wrong username or password")
-            }
+            user_logged_in=true;
+            username=user_text;
+            $(".login").hide();
+            $(".question").show();
+            $("#toggle_login").html("Logout");
+        }).fail(function(data){
+            alert(data.message);
         });
     });
 
     $("#logout_btn").click(function(){
-        user_auth=false;
+        user_logged_in=false;
         $(".login").show();
         $(".logout").hide();
         $(".question").hide();
@@ -131,12 +133,12 @@ $(document).ready(function(){
     });
 
     $("#op1").click(function(){
-        if(user_auth==true){
+        if(user_logged_in==true){
             $.ajax({
                 type:"POST",
                 url:"/answer",
                 dataType:"json",
-                data:{username:username,choice:1,id:sessionid}
+                data:{choice:1,id:sessionid}
             });
             $('.options').prop('disabled', true);
         }
@@ -150,12 +152,12 @@ $(document).ready(function(){
     });
 
     $("#op2").click(function(){
-        if(user_auth==true){
+        if(user_logged_in==true){
             $.ajax({
                 type:"POST",
                 url:"/answer",
                 dataType:"json",
-                data:{username:username,choice:2,id:sessionid}
+                data:{choice:2,id:sessionid}
             });
             $('.options').prop('disabled', true);
         }
@@ -169,12 +171,12 @@ $(document).ready(function(){
     });
 
     $("#op3").click(function(){
-        if(user_auth==true){
+        if(user_logged_in==true){
             $.ajax({
                 type:"POST",
                 url:"/answer",
                 dataType:"json",
-                data:{username:username,choice:3,id:sessionid}
+                data:{choice:3,id:sessionid}
             });
             $('.options').prop('disabled', true);
         }
@@ -188,12 +190,12 @@ $(document).ready(function(){
     });
 
     $("#op4").click(function(){
-        if(user_auth==true){
+        if(user_logged_in==true){
             $.ajax({
                 type:"POST",
                 url:"/answer",
                 dataType:"json",
-                data:{username:username,choice:4,id:sessionid}
+                data:{choice:4,id:sessionid}
             });
             $('.options').prop('disabled', true);
         }
@@ -207,98 +209,70 @@ $(document).ready(function(){
     });
 
     $("#next").click(function(){
-        if(!logged_in){
-            $(".leaderboard").show();
-            logged_in = true;
-            admin = prompt("Authentication - Username", "");
-            password = prompt("Authentication - Password", "");
-            time_text = $("#time_text").val();
-            time = time_text;
-            auth_post = true; 
-            console.log(admin);
-            console.log(password);   
+
+        $(".leaderboard").show();
+        var time_text = $("#time_text").val();
+        if(!admin_logged_in){
+            admin_username = prompt("Authentication - Admin Username", "");
+            admin_password = prompt("Authentication - Admin Password", "");
         }
-        if(auth_post){
-            console.log(admin);
-            console.log(password);
-            $.ajax({
-                type:"POST",
-                url:"/nextQuestion",
-                dataType:"json",
-                data:{credential:{username:admin,password:password},time:time}
-            }).done(function(data){
-                // console.log(data.authentication);
-                if(data.authentication){
-                    $("#check_text").html("Hello, Admin.");
-                    // console.log(JSON.stringify(data));
-                    if(data.question.id!=null){
-                        $("#que").html(data.question.id);
-                        $("#op1").html(data.question.option1);
-                        $("#op2").html(data.question.option2);
-                        $("#op3").html(data.question.option3);
-                        $("#op4").html(data.question.option4);
-                        $("#question_text").html("Question "+data.question.id+": "+data.question.question);
-                        $(".countdown").show();
-                        var countdown_time = data.time
-                        console.log(countdown_time);
-                        var distance = (countdown_time*1 + 1) * 1000;
-                        var x = setInterval(function() {
-                            distance = distance - 1000;
-                            console.log(distance);
-                            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                            
-                            document.getElementById("timer").innerHTML = seconds + "s "; 
-                            if (distance < 0) {
-                                clearInterval(x);
-                                document.getElementById("timer").innerHTML = "Time Up!!!";
-                                $.ajax({
-                                    type:"POST",
-                                    url:"/result",
-                                    dataType:"json"
-                                }).done(function (data){
-                                    // console.log(JSON.stringify(data));
-                                    var leaderboard = [];
-                                    $("#leader").empty();
-                                    for (var i in data.scores) {
-                                        var player = data.scores[i];
-                                        var player_score = 0;
-                                        for(var ques in player) {
-                                            player_score += player[ques];
-                                        }
-                                        leaderboard.push([i,player_score]);
-                                    }
-                                    console.log(leaderboard);
-                                    leaderboard.sort(function(a,b){
-                                        return b[1]-a[1];
-                                    });
-                                    console.log(leaderboard);
-                                    for(var i =0 ; i< leaderboard.length;i++)
-                                    {
-                                        console.log(leaderboard[i][0]+" "+leaderboard[i][1]);
-                                        var tr = document.createElement("tr");
-                                        var td1 = document.createElement("td");
-                                        var td2 = document.createElement("td");
-                                        td1.append(document.createTextNode(leaderboard[i][0]));
-                                        td2.append(document.createTextNode(leaderboard[i][1]));
-                                        td1.setAttribute("class","td1");
-                                        td2.setAttribute("class","td2");
-                                        tr.append(td1);
-                                        tr.append(td2);
-                                        $("#leader").append(tr);
-                                    }
-                                });
+        $.ajax({
+            type:"POST",
+            url:"/nextQuestion",
+            dataType:"json",
+            data:{credential:{username:admin,password:password},time:time}
+        }).done(function(data){
+            admin_logged_in = true;
+            if(data.question!=null){
+                $("#que").html(data.question.id);
+                $("#op1").html(data.question.option1);
+                $("#op2").html(data.question.option2);
+                $("#op3").html(data.question.option3);
+                $("#op4").html(data.question.option4);
+                $("#question_text").html(data.question.question);
+                $(".countdown").show();
+                var countdown_time = time_text
+                var distance = (countdown_time*1 + 1) * 1000;
+                var x = setInterval(function() {
+                    distance = distance - 1000;
+                    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                    document.getElementById("timer").innerHTML = seconds + "s "; 
+                    if (distance < 0) {
+                        clearInterval(x);
+                        document.getElementById("timer").innerHTML = "Time Up!!!";
+                        $.ajax({
+                            type:"POST",
+                            url:"/result",
+                            dataType:"json"
+                        }).done(function (data){
+                            $("#leader").empty();
+                            for(var i =0 ; i < data.length;i++){
+                                var tr = document.createElement("tr");
+                                var td_rank = document.createElement("td");                                
+                                var td_username = document.createElement("td");
+                                var td_score = document.createElement("td");
+                                td_rank.append(document.createTextNode(i+1));                                
+                                td_username.append(document.createTextNode(data[i].username));
+                                td_score.append(document.createTextNode(data[i].score));
+                                td_rank.setAttribute("class","td1");
+                                td_username.setAttribute("class","td2");
+                                td_score.setAttribute("class","td3");                                
+                                tr.append(td_rank);
+                                tr.append(td_username);
+                                tr.append(td_score);
+                                $("#leader").append(tr);
                             }
-                        }, 1000);
-                        socket.emit('updateQuestion',data.question.id);
-                    } else {
-                        socket.emit('updateResult');
+                        });
                     }
-                }
-                else{
-                    $("#check_text").html("Invalid Credentials!!!!");
-                }
-            });
-        }
+                }, 1000);
+                socket.emit('updateQuestion',data.question.id);
+            } else {
+                socket.emit('updateResult');
+            }
+        }).fail(function(data){
+            alert(data.message)
+            $("#check_text").html(data.message);
+        });
     });
 
 });
