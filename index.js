@@ -46,7 +46,7 @@ function initialize() {
             else
                 console.log("questions loaded");
         });
-    userData = [];
+    userData = {};
     question = [];
     inverseSocketDict = {};
     TIME = new Date();
@@ -54,16 +54,12 @@ function initialize() {
     setting = JSON.parse(fs.readFileSync(settingFilePath, 'utf8'));
 }
 function check_user_auth(passCode) {
-    console.log("passcode: ",setting.passCode)
-    console.log("input: ",passCode)
     if(!passCode || passCode != setting.passCode) {
         return false;
     }
     return true;
 }
 function check_admin_auth(credential) {
-    console.log("credential: ",credential);
-    console.log("admins: ",setting.admin);
     if (!credential || !credential.username || !credential.password) {
         return false;
     }
@@ -74,6 +70,9 @@ function check_admin_auth(credential) {
 }
 function saveUserData(path) {
     var data = JSON.stringify(userData);
+    console.log("userData: ",userData);
+    console.log("File Path: ",path);
+    console.log("data: ",data);
     fs.writeFile(path, data, 'utf8', function (err,data){
         if(err)
             console.log("Err: ",err);
@@ -104,6 +103,8 @@ app.get('/question', function (req, res) {
 
 app.get('/result', function (req, res) {
     console.log("userData: ",userData);
+    console.log("inversetable: ",inverseSocketDict);
+
     saveUserData(userDataFile);
     var scoreBoard = [];
     for(var username in userData) {
@@ -192,7 +193,7 @@ app.post('/login', function (req, res) {
             });
         } else if (userData[username].disconnected) {
             userData[username].disconnected = false;
-            userData.id = req.body.id;
+            userData[username].id = req.body.id;
             inverseSocketDict[req.body.id]=username;
             return res.json({
                 "message": "User Reconnected",
@@ -233,8 +234,6 @@ app.post('/answer', function (req, res) {
     }
 
     var username = inverseSocketDict[socketid];
-    console.log(userData);
-    console.log("username: ",username);
     if(userData[username].history[QUESNO]) {
         return error(res,409,"Question already attempted");
     }
@@ -264,7 +263,10 @@ io.on('connection', function (socket) {
     });
     socket.on('disconnect', function () {
         if(socket.id in inverseSocketDict)
+        {
+            console.log("Disconnecting id: ",socket.id);
             userData[inverseSocketDict[socket.id]].disconnected = true;
+        }
     });
 });
 
