@@ -242,11 +242,26 @@ $(document).ready(function(){
                         clearInterval(x);
                         document.getElementById("timer").innerHTML = "Time Up!!!";
                         $.ajax({
-                            type:"POST",
+                            type:"GET",
                             url:"/result",
                             dataType:"json"
                         }).done(function (data){
                             $("#leader").empty();
+                            data = data.leaderboard;
+                            var th = document.createElement("tr");
+                            var th_rank = document.createElement("td");                                
+                            var th_username = document.createElement("td");
+                            var th_score = document.createElement("td");
+                            th_rank.append(document.createTextNode("Rank"));                                
+                            th_username.append(document.createTextNode("Username"));
+                            th_score.append(document.createTextNode("Score"));
+                            th_rank.setAttribute("class","td2");
+                            th_username.setAttribute("class","td1");
+                            th_score.setAttribute("class","td0");                                
+                            th.append(th_rank);
+                            th.append(th_username);
+                            th.append(th_score);
+                            $("#leader").append(th);                            
                             for(var i =0 ; i < data.length;i++){
                                 var tr = document.createElement("tr");
                                 var td_rank = document.createElement("td");                                
@@ -255,9 +270,9 @@ $(document).ready(function(){
                                 td_rank.append(document.createTextNode(i+1));                                
                                 td_username.append(document.createTextNode(data[i].username));
                                 td_score.append(document.createTextNode(data[i].score));
-                                td_rank.setAttribute("class","td1");
-                                td_username.setAttribute("class","td2");
-                                td_score.setAttribute("class","td3");                                
+                                td_rank.setAttribute("class","td0");
+                                td_username.setAttribute("class","td1");
+                                td_score.setAttribute("class","td2");                                
                                 tr.append(td_rank);
                                 tr.append(td_username);
                                 tr.append(td_score);

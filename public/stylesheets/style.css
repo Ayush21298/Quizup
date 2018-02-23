@@ -76,13 +76,19 @@ body {
 	color: white;
 }
 
+.td0 {
+	width: 20%;
+	background-color: #0859db;
+}
+
+
 .td1 {
-	width: 60%;
+	width: 50%;
 	background-color: #f28f3b;
 }
 
 .td2 {
-	width: 40%;
+	width: 30%;
 	background-color: #0b3142;
 	text-align: center;
 }
