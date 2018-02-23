@@ -4,8 +4,6 @@ var sessionid;
 var username;
 var user_logged_in=false;
 
-var auth_post=false;
-
 var admin_logged_in=false;
 var admin_username,admin_password;
 
@@ -53,12 +51,14 @@ $(document).ready(function(){
         url:"/question",
         dataType:"json"
     }).done(function(data){
-        $(".options").prop('disabled',false);
-        $("#que").html("Question No. "+data.question.id);
-        $("#op1").html(data.question.option1);
-        $("#op2").html(data.question.option2);
-        $("#op3").html(data.question.option3);
-        $("#op4").html(data.question.option4);
+        if(data.question!=null){
+            $(".options").prop('disabled',false);
+            $("#que").html("Question No. "+data.question.id);
+            $("#op1").html(data.question.option1);
+            $("#op2").html(data.question.option2);
+            $("#op3").html(data.question.option3);
+            $("#op4").html(data.question.option4);
+        }
     });
     
     $(".admin").hide();
