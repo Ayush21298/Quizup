@@ -20,10 +20,16 @@ nav {
 	height: 40px;
 }
 
-.login, .question, .admin {
+.login, .question{
 	width: 25%;
 	min-width: 300px;
 	margin: auto;
+}
+
+.admin {
+	width: 30%;
+	min-width: 300px;
+	margin: auto;	
 }
 
 .countdown {
@@ -53,7 +59,7 @@ body {
 .leaderboard {
 	position: absolute;
 	right: 0px;
-	width: 15vw;
+	width: 25vw;
 	height: 92vh;
 	top: 50px;
 	min-width: 150px;

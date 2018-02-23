@@ -5,6 +5,12 @@ var logged_in=false;
 var auth_post=false;
 var admin,password;
 var users={};
+var sessionid;
+
+socket.on('connect', function(){
+    sessionid = socket.id;
+    console.log(sessionid);
+})
 
 socket.on('updateQuestion', function(data){
     // alert(JSON.stringify(data));
@@ -139,7 +145,7 @@ $(document).ready(function(){
                 type:"POST",
                 url:"/answer",
                 dataType:"json",
-                data:{username:username,choice:1}
+                data:{username:username,choice:1,id:sessionid}
             });
             $('.options').prop('disabled', true);
         }
@@ -158,7 +164,7 @@ $(document).ready(function(){
                 type:"POST",
                 url:"/answer",
                 dataType:"json",
-                data:{username:username,choice:2}
+                data:{username:username,choice:2,id:sessionid}
             });
             $('.options').prop('disabled', true);
         }
@@ -177,7 +183,7 @@ $(document).ready(function(){
                 type:"POST",
                 url:"/answer",
                 dataType:"json",
-                data:{username:username,choice:3}
+                data:{username:username,choice:3,id:sessionid}
             });
             $('.options').prop('disabled', true);
         }
@@ -196,7 +202,7 @@ $(document).ready(function(){
                 type:"POST",
                 url:"/answer",
                 dataType:"json",
-                data:{username:username,choice:4}
+                data:{username:username,choice:4,id:sessionid}
             });
             $('.options').prop('disabled', true);
         }
@@ -254,6 +260,42 @@ $(document).ready(function(){
                             if (distance < 0) {
                                 clearInterval(x);
                                 document.getElementById("timer").innerHTML = "Time Up!!!";
+                                $.ajax({
+                                    type:"POST",
+                                    url:"/result",
+                                    dataType:"json"
+                                }).done(function (data){
+                                    // console.log(JSON.stringify(data));
+                                    var leaderboard = [];
+                                    $("#leader").empty();
+                                    for (var i in data.scores) {
+                                        var player = data.scores[i];
+                                        var player_score = 0;
+                                        for(var ques in player) {
+                                            player_score += player[ques];
+                                        }
+                                        leaderboard.push([i,player_score]);
+                                    }
+                                    console.log(leaderboard);
+                                    leaderboard.sort(function(a,b){
+                                        return b[1]-a[1];
+                                    });
+                                    console.log(leaderboard);
+                                    for(var i =0 ; i< leaderboard.length;i++)
+                                    {
+                                        console.log(leaderboard[i][0]+" "+leaderboard[i][1]);
+                                        var tr = document.createElement("tr");
+                                        var td1 = document.createElement("td");
+                                        var td2 = document.createElement("td");
+                                        td1.append(document.createTextNode(leaderboard[i][0]));
+                                        td2.append(document.createTextNode(leaderboard[i][1]));
+                                        td1.setAttribute("class","td1");
+                                        td2.setAttribute("class","td2");
+                                        tr.append(td1);
+                                        tr.append(td2);
+                                        $("#leader").append(tr);
+                                    }
+                                });
                             }
                         }, 1000);
                         socket.emit('updateQuestion',data.question.id);
@@ -263,42 +305,6 @@ $(document).ready(function(){
                 }
                 else{
                     $("#check_text").html("Invalid Credentials!!!!");
-                }
-            });
-            $.ajax({
-                type:"POST",
-                url:"/result",
-                dataType:"json"
-            }).done(function (data){
-                // console.log(JSON.stringify(data));
-                var leaderboard = [];
-                $("#leader").empty();
-                for (var i in data.scores) {
-                    var player = data.scores[i];
-                    var player_score = 0;
-                    for(var ques in player) {
-                        player_score += player[ques];
-                    }
-                    leaderboard.push([i,player_score]);
-                }
-                console.log(leaderboard);
-                leaderboard.sort(function(a,b){
-                    return b[1]-a[1];
-                });
-                console.log(leaderboard);
-                for(var i =0 ; i< leaderboard.length;i++)
-                {
-                    console.log(leaderboard[i][0]+" "+leaderboard[i][1]);
-                    var tr = document.createElement("tr");
-                    var td1 = document.createElement("td");
-                    var td2 = document.createElement("td");
-                    td1.append(document.createTextNode(leaderboard[i][0]));
-                    td2.append(document.createTextNode(leaderboard[i][1]));
-                    td1.setAttribute("class","td1");
-                    td2.setAttribute("class","td2");
-                    tr.append(td1);
-                    tr.append(td2);
-                    $("#leader").append(tr);
                 }
             });
         }

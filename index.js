@@ -9,6 +9,7 @@ var queno=-1;
 var users=[];
 var scores={};
 var question=[];
+var sockets=[];
 var time=new Date();
 var loggedIn=false;
 
@@ -107,11 +108,13 @@ app.post('/answer',function(req,res){
 	if((new Date)<time){
 		username=req.body.username;
 		choice=req.body.choice;
-		correct=question[queno].correct;
-		// console.log(queno);
-		// if(scores[username].has(queno)){
-		// 	console.log("Repeat");
-		// } else {
+		socketid=req.body.id;
+		if(sockets.indexOf(socketid)!=-1){
+			correct=question[queno].correct;
+			// console.log(queno);
+			// if(scores[username].has(queno)){
+			// 	console.log("Repeat");
+			// } else {
 			if(choice==correct){
 				// console.log("Correct");
 				// console.log(scores);
@@ -123,12 +126,16 @@ app.post('/answer',function(req,res){
 				scores[username][queno]=0;
 				console.log(JSON.stringify(scores));
 			}
-		// }
+		}else{
+			console.log("Invalid request");
+		}
 	}
 });
 
 io.on('connection',function(socket){
 	// console.log("New Client");
+	sockets.push(socket.id);
+	console.log(sockets);
 	socket.on('updateQuestion',function(data){
 		console.log("Update Question : Question "+data);
 		io.sockets.emit('updateQuestion',data);
@@ -136,5 +143,9 @@ io.on('connection',function(socket){
 	socket.on('updateResult',function(){
 		console.log("Update Result");
 		io.sockets.emit('updateResult');
+	});
+	socket.on('disconnect',function(){
+		var i = sockets.indexOf(socket.id);
+		sockets.splice(i,1);
 	});
 });
