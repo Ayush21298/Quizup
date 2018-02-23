@@ -1,0 +1,6 @@
+{
+    "passCode": "<passcode for users>",
+    "admin": {
+        "<username>": "<password>"
+    }
+}
