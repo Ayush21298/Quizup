@@ -15,13 +15,9 @@ var loggedIn=false;
 
 const csvFilePath='public/csv/a.csv';
 const csv=require('csvtojson');
-csv()
-.fromFile(csvFilePath)
-.on('json',(jsonObj)=>{
-    // console.log(JSON.stringify(jsonObj));
+csv().fromFile(csvFilePath).on('json',(jsonObj)=>{
     question.push(jsonObj);
-})
-.on('done',(error)=>{
+}).on('done',(error)=>{
 	// console.log(question);
     // console.log('end');
 });

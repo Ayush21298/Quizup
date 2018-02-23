@@ -1,4 +1,4 @@
-var socket = io.connect("http://localhost:8002");
+var socket = io.connect();
 var username;
 var user_auth=false;
 var logged_in=false;
@@ -9,11 +9,9 @@ var sessionid;
 
 socket.on('connect', function(){
     sessionid = socket.id;
-    console.log(sessionid);
 })
 
 socket.on('updateQuestion', function(data){
-    // alert(JSON.stringify(data));
     $.ajax({
         type:"GET",
         url:"/question",
@@ -29,25 +27,22 @@ socket.on('updateQuestion', function(data){
 });
 
 socket.on('updateResult', function(){
-    // alert(JSON.stringify(data));
-    // alert("yo");
     $.ajax({
         type:"GET",
         url:"/result",
         dataType:"json"
     }).done(function(data){
         $(".options").prop('disabled',false);
-        $("#que").html(JSON.stringify(data.scores));
+        // $("#que").html(JSON.stringify(data.scores));
+        $("#que").html("");
         $("#op1").html("");
         $("#op2").html("");
         $("#op3").html("");
         $("#op4").html("");
-        alert(JSON.stringify(data.scores));
     });
 });
 
 $(document).ready(function(){
-    console.log("Working");
 
     $.ajax({
         type:"GET",
@@ -62,8 +57,6 @@ $(document).ready(function(){
         $("#op4").html(data.question.option4);
     });
     
-    // $(".intro").hide();
-
     $(".admin").hide();
 
     if(user_auth==false){
@@ -107,7 +100,6 @@ $(document).ready(function(){
     })
 
     $("#log_btn").click(function(){
-        // alert("ayush");
         user_text = $("#user_text").val();
         pass_text = $("#pass_text").val();
         $("#user_text").val("");
@@ -116,9 +108,8 @@ $(document).ready(function(){
             type:"POST",
             url:"/user_auth",
             dataType:"json",
-            data:{user_text:user_text,pass_text:pass_text}
+            data:{user_text:user_text,pass_text:pass_text,id:sessionid}
         }).done(function(data){
-            // alert(JSON.stringify(data));
             if(data.user_auth==true){
                 user_auth=true;
                 username=data.username;
@@ -232,9 +223,9 @@ $(document).ready(function(){
             console.log(password);
             $.ajax({
                 type:"POST",
-                url:"/auth",
+                url:"/nextQuestion",
                 dataType:"json",
-                data:{username:admin,password:password,time:time}
+                data:{credential:{username:admin,password:password},time:time}
             }).done(function(data){
                 // console.log(data.authentication);
                 if(data.authentication){
