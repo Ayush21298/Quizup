@@ -1,33 +1,30 @@
-var express = require('express');
-var app = express();
-var server = require('http').createServer(app);
-var io = require('socket.io').listen(server);
-var fs = require('fs');
-var PORT = process.env.PORT || 8002;
-var bodyParser = require('body-parser');
-var queno = -1;
-var userData = {};
-var inverseSocketDict = {};
-var question = [];
-var sockets = [];
-var TIME = new Date();
-
-const csvFilePath = 'ignore/question.csv';
-const adminFilePath = 'ignore/admin.json';
-const userDataFile = 'public/result.json';
-
-var setting;
+const express = require('express');
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io').listen(server);
+const fs = require('fs');
+const bodyParser = require('body-parser');
 const csv = require('csvtojson');
+
+const PORT = process.env.PORT || 8002;
+const csvFilePath = 'ignore/question.csv';
+const settingFilePath = 'ignore/setting.json';
+const userDataFile = 'public/result/user.json';
+const userBackupFile = 'public/result/user_bak.json';
+
+var setting={};
+var question = [];
+var inverseSocketDict = {};
+var userData = {};
+var QUESNO = -1;
+var TIME = new Date();
 
 app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(bodyParser.json());
-
 app.use('/', express.static(__dirname + '/public'));
 
-server.listen(PORT);
-console.log('Listening at : http://localhost:' + PORT);
 
 function error(res, statusCode, msg) {
     res.status(statusCode).json({
@@ -35,7 +32,6 @@ function error(res, statusCode, msg) {
         message: msg,
     })
 }
-
 function initialize() {
     csv()
         .fromFile(csvFilePath)
@@ -51,10 +47,9 @@ function initialize() {
     question = [];
     sockets = [];
     TIME = new Date();
-    queno = -1;
-    setting = JSON.parse(fs.readFileSync(adminFilePath, 'utf8'));
+    QUESNO = -1;
+    setting = JSON.parse(fs.readFileSync(settingFilePath, 'utf8'));
 }
-
 function check_user_auth(passCode) {
     if(!passCode || passCode != setting.passCode) {
         return false;
@@ -70,10 +65,9 @@ function check_admin_auth(credential) {
     }
     return false;
 }
-
-function saveUserData() {
+function saveUserData(path) {
     var data = JSON.stringify(userData);
-    fs.writeFile(userDataFile, data, 'utf8', function (err,data){
+    fs.writeFile(path, data, 'utf8', function (err,data){
         if(err)
             console.log("Err: ",err);
         else
@@ -86,7 +80,7 @@ app.get('/', function (req, res) {
 });
 
 app.get('/question', function (req, res) {
-    var ques = JSON.parse(JSON.stringify(question[queno]));
+    var ques = JSON.parse(JSON.stringify(question[QUESNO]));
     delete ques["correct"];
     res.json({
         question: ques
@@ -94,7 +88,7 @@ app.get('/question', function (req, res) {
 });
 
 app.get('/result', function (req, res) {
-    saveUserData();
+    saveUserData(userDataFile);
     var scoreBoard = [];
     for(var username in userData) {
         scoreBoard.push({score: userData[username].score,username: userData[username].username});
@@ -106,14 +100,23 @@ app.get('/result', function (req, res) {
         else if (a.username > b.username) return 1;
         else return 0;
     });
-    res.json({
+    return res.json({
         leaderboard: scoreBoard
     });
 });
 
+app.post('/reset',function(req,res){
+    saveUserData(userBackupFile);
+    if (check_admin_auth(req.credential)) {
+        initialize();
+        return res.json({message: "QuizUp Successfully Restarted"});
+    } else {
+        return error(res,401,"Incorrect admin credentials");
+    }
+})
 
 app.post('/nextQuestion', function (req, res) {
-    saveUserData();
+    saveUserData(userDataFile);
     if (!req.body.time) {
         return error(res,400,"Include time field in the request");
     }
@@ -122,14 +125,14 @@ app.post('/nextQuestion', function (req, res) {
         return error(res,400,"time field should be an integer");
     }
     if (check_admin_auth(req.credential)) {
-        queno = queno + 1;
+        QUESNO = QUESNO + 1;
         tt = new Date();
         tt.setSeconds(tt.getSeconds() + quesTime);
         TIME = tt;
-        if (queno < question.length) {
+        if (QUESNO < question.length) {
             return res.json({
                 // authentication: true,
-                question: question[queno],
+                question: question[QUESNO],
                 // time: req.body.time
             });
         } else {
@@ -217,18 +220,17 @@ app.post('/answer', function (req, res) {
     }
 
     username = userData[inverseSocketDict[socketid]];
-    if(userData[username].history[queno]) {
+    if(userData[username].history[QUESNO]) {
         return error(res,409,"Question already attempted");
     }
     if ((new Date) < TIME) {
-
-        correctAns = parseInt(question[queno].correct);
-        userData[username].history[queno] = choice;
+        correctAns = parseInt(question[QUESNO].correct);
+        userData[username].history[QUESNO] = choice;
         if (choice == correctAns) {
             userData[username].score += 10;
-            userData[username].points[queno] = 1;
+            userData[username].points[QUESNO] = 1;
         } else {
-            userData[username].points[queno] = 0;
+            userData[username].points[QUESNO] = 0;
         }
         return res.json({"message": "Question Marked"});
     } else {
@@ -237,8 +239,6 @@ app.post('/answer', function (req, res) {
 });
 
 io.on('connection', function (socket) {
-    sockets.push(socket.id);
-    console.log(sockets);
     socket.on('updateQuestion', function (data) {
         console.log("Update Question : Question " + data);
         io.sockets.emit('updateQuestion', data);
@@ -248,7 +248,11 @@ io.on('connection', function (socket) {
         io.sockets.emit('updateResult');
     });
     socket.on('disconnect', function () {
-        var i = sockets.indexOf(socket.id);
-        sockets.splice(i, 1);
+        if(socketid in inverseSocketDict)
+            userData[inverseSocketDict[socketid]].disconnected = true;
     });
 });
+
+initialize();
+server.listen(PORT);
+console.log('Listening at : http://localhost:' + PORT);
