@@ -62,6 +62,8 @@ function check_user_auth(passCode) {
     return true;
 }
 function check_admin_auth(credential) {
+    console.log("credential: ",credential);
+    console.log("admins: ",setting.admin);
     if (!credential || !credential.username || !credential.password) {
         return false;
     }
@@ -138,9 +140,9 @@ app.post('/nextQuestion', function (req, res) {
     if(quesTime==NaN) {
         return error(res,400,"Time field should be an integer");
     }
-    if (check_admin_auth(req.credential)) {
+    if (check_admin_auth(req.body.credential)) {
         QUESNO = QUESNO + 1;
-        tt = new Date();
+        var tt = new Date();
         tt.setSeconds(tt.getSeconds() + quesTime);
         TIME = tt;
         if (QUESNO < question.length) {
@@ -207,6 +209,10 @@ app.post('/login', function (req, res) {
 });
 
 app.post('/answer', function (req, res) {
+    if(QUESNO < 0 || QUESNO >= question.length) {
+        return error(res,403,"Either contest has not started or has ended");
+    }
+
     var choice,socketid;
     if(!req.body.id) {
         return error(res,400,"Socket Id not given");
@@ -224,12 +230,14 @@ app.post('/answer', function (req, res) {
         return error(res,400,"Choice should be an integer");
     }
 
-    username = userData[inverseSocketDict[socketid]];
+    var username = inverseSocketDict[socketid];
+    console.log(userData);
+    console.log("username: ",username);
     if(userData[username].history[QUESNO]) {
         return error(res,409,"Question already attempted");
     }
     if ((new Date) < TIME) {
-        correctAns = parseInt(question[QUESNO].correct);
+        var correctAns = parseInt(question[QUESNO].correct);
         userData[username].history[QUESNO] = choice;
         if (choice == correctAns) {
             userData[username].score += 10;
@@ -253,8 +261,8 @@ io.on('connection', function (socket) {
         io.sockets.emit('updateResult');
     });
     socket.on('disconnect', function () {
-        if(socketid in inverseSocketDict)
-            userData[inverseSocketDict[socketid]].disconnected = true;
+        if(socket.id in inverseSocketDict)
+            userData[inverseSocketDict[socket.id]].disconnected = true;
     });
 });
 
