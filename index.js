@@ -123,7 +123,7 @@ app.get('/result', function (req, res) {
 
 app.post('/reset',function(req,res){
     saveUserData(userBackupFile);
-    if (check_admin_auth(req.credential)) {
+    if (check_admin_auth(req.body.credential)) {
         initialize();
         return res.json({message: "QuizUp Successfully Restarted"});
     } else {
@@ -137,6 +137,8 @@ app.post('/nextQuestion', function (req, res) {
         return error(res,400,"Include time field in the request");
     }
     var quesTime = parseInt(req.body.time)
+    console.log("quesTime: ",quesTime);
+    console.log("time: ",req.body.time);
     if(quesTime==NaN) {
         return error(res,400,"Time field should be an integer");
     }
