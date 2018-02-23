@@ -62,13 +62,14 @@ $(document).ready(function(){
     });
     
     $(".admin").hide();
+    $(".leaderborad").hide();
 
     if(user_logged_in==false){
         $("#toggle_login").html("Login");
         $(".question").hide();
         $(".login").show();
         $(".logout").hide();
-        $(".").hide();
+        $(".leaderboard").hide();
         $(".countdown").hide();
     }else{
         $("#toggle_login").html("Logout");
@@ -220,7 +221,7 @@ $(document).ready(function(){
             type:"POST",
             url:"/nextQuestion",
             dataType:"json",
-            data:{credential:{username:admin,password:password},time:time}
+            data:{credential:{username:admin_username,password:admin_password},time:time_text}
         }).done(function(data){
             admin_logged_in = true;
             if(data.question!=null){
@@ -285,9 +286,9 @@ var TxtType = function(el, toRotate, period) {
         this.txt = '';
         this.tick();
         this.isDeleting = false;
-    };
+};
 
-    TxtType.prototype.tick = function() {
+TxtType.prototype.tick = function() {
         var i = this.loopNum % this.toRotate.length;
         var fullTxt = this.toRotate[i];
 
@@ -316,9 +317,9 @@ var TxtType = function(el, toRotate, period) {
         setTimeout(function() {
         that.tick();
         }, delta);
-    };
+};
 
-    window.onload = function() {
+window.onload = function() {
         var elements = document.getElementsByClassName('typewrite');
         for (var i=0; i<elements.length; i++) {
             var toRotate = elements[i].getAttribute('data-type');
@@ -332,4 +333,4 @@ var TxtType = function(el, toRotate, period) {
         css.type = "text/css";
         css.innerHTML = ".typewrite > .wrap { border-right: 0.08em solid #fff}";
         document.body.appendChild(css);
-    };
+};

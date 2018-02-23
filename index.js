@@ -37,7 +37,7 @@ function initialize() {
     csv()
         .fromFile(csvFilePath)
         .on('json', (jsonObj) => {
-            console.log("Json: ", jsonObj);
+            // console.log("Json: ", jsonObj);
             question.push(jsonObj);
         })
         .on('done', (error) => {
