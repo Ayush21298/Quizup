@@ -1,3 +1,4 @@
+"use strict";
 const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
@@ -40,17 +41,21 @@ function initialize() {
             question.push(jsonObj);
         })
         .on('done', (error) => {
-            console.log(error);
+            if(error)
+                console.log(error);
+            else
+                console.log("questions loaded");
         });
-    users = [];
     userData = [];
     question = [];
-    sockets = [];
+    inverseSocketDict = {};
     TIME = new Date();
     QUESNO = -1;
     setting = JSON.parse(fs.readFileSync(settingFilePath, 'utf8'));
 }
 function check_user_auth(passCode) {
+    console.log("passcode: ",setting.passCode)
+    console.log("input: ",passCode)
     if(!passCode || passCode != setting.passCode) {
         return false;
     }
@@ -80,18 +85,27 @@ app.get('/', function (req, res) {
 });
 
 app.get('/question', function (req, res) {
+    if(QUESNO < 0 || QUESNO >= question.length) {
+        return res.json({
+            "message": "Either contest has not started or has ended",
+            question: null,
+            time: new Date()
+        });
+    }
     var ques = JSON.parse(JSON.stringify(question[QUESNO]));
     delete ques["correct"];
     res.json({
-        question: ques
+        question: ques,
+        time: TIME
     });
 });
 
 app.get('/result', function (req, res) {
+    console.log("userData: ",userData);
     saveUserData(userDataFile);
     var scoreBoard = [];
     for(var username in userData) {
-        scoreBoard.push({score: userData[username].score,username: userData[username].username});
+        scoreBoard.push({score: userData[username].score,username: username});
     }
     scoreBoard.sort(function(a,b){
         if(a.score < b.score) return -1;
@@ -122,7 +136,7 @@ app.post('/nextQuestion', function (req, res) {
     }
     var quesTime = parseInt(req.body.time)
     if(quesTime==NaN) {
-        return error(res,400,"time field should be an integer");
+        return error(res,400,"Time field should be an integer");
     }
     if (check_admin_auth(req.credential)) {
         QUESNO = QUESNO + 1;
@@ -130,37 +144,36 @@ app.post('/nextQuestion', function (req, res) {
         tt.setSeconds(tt.getSeconds() + quesTime);
         TIME = tt;
         if (QUESNO < question.length) {
+            var ques = JSON.parse(JSON.stringify(question[QUESNO]));
+            delete ques.correct;
             return res.json({
-                // authentication: true,
-                question: question[QUESNO],
-                // time: req.body.time
+                question: ques,
+                time: TIME
             });
         } else {
             return res.json({
                 message: "End of Questions!",
-                // authentication: true,
-                question: {}
+                question: null,
+                time: new Date()
             });
         }
     } else {
         return error(res,401,"Incorrect admin credentials");
-        // return res.json({
-        //     authentication: false
-        // });
     }
 });
 
 app.post('/login', function (req, res) {
+    console.log("body: ",req.body);
     if (!req.body.username) {
-        return error(req,400,"username field not set");
+        return error(res,400,"username field not set");
     }
     if (!req.body.passcode) {
-        return error(req,400,"passcode field not set");
+        return error(res,400,"passcode field not set");
     }
     if (!req.body.id) {
-        return error(req,400,"socket id not given");
+        return error(res,400,"socket id not given");
     }
-    if (check_user_auth(req.passcode)) {
+    if (check_user_auth(req.body.passcode)) {
         var username = req.body.username;
         if(!(username in userData)) {
             userData[username]={"disconnected":false,"history":{},"points":{},"score":0,"id":req.body.id};
@@ -187,17 +200,9 @@ app.post('/login', function (req, res) {
             });
         } else {
             return error(res,403,"Username already taken");
-            // return res.json({
-            //     user_auth: false,
-            //     username: req.body.username
-            // });
         }
     } else {
         return error(res,401,"Wrong Pass Code");
-        // res.json({
-        //     user_auth: false,
-        //     username: req.body.username
-        // });
     }
 });
 
