@@ -209,6 +209,21 @@ $(document).ready(function(){
         }
     });
 
+    $("#reset").click(function(){
+        if(!admin_logged_in){
+            admin_username = prompt("Authentication - Admin Username", "");
+            admin_password = prompt("Authentication - Admin Password", "");
+        }
+        $.ajax({
+            type:"POST",
+            url:"/reset",
+            dataType:"json",
+            data:{credential:{username:admin_username,password:admin_password}}
+        }).done(function(data){
+            prompt("Reset done! Reload the page");
+        })
+
+    });
     $("#next").click(function(){
 
         $(".leaderboard").show();
